@@ -1,10 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Sun Dec  8 19:05:28 2019
-
-@author: tbarton
-"""
 
 
 import numpy as np
@@ -45,6 +38,12 @@ np.array(datax).shape
 X = X/float(n_vocab)
 y = np_utils.to_categorical(datay)
 
+y_new =[]
+for i in range(len(y)):
+   y_new.append([int(j) for j in y[i]])
+
+y = np.array(y_new)
+
 
 print('model being created')
 
@@ -52,17 +51,18 @@ print('model being created')
 model = Sequential()
 model.add(LSTM(256, input_shape=(X.shape[1], X.shape[2])))
 model.add(Dropout(.4))
-model.add(Dense(100, activation = 'tanh', activity_regularizer=keras.regularizers.l2(0.01)))
+model.add(Dense(100, activation = 'tanh'))
 model.add(Dense(y.shape[1], activation = 'softmax'))
 
 
 model.compile(loss = 'categorical_crossentropy', 
-              optimizer='adam',
-              clip_norm=1.0)
+              optimizer=keras.optimizers.adam())
 
 filepath = "best_weights2.hdf5"
 checkpoint = ModelCheckpoint(filepath, monitor='loss', verbose=1, save_best_only=True, mode='min')
 callbacks_list = [checkpoint]
-
-
-model.fit(X, y, epochs=30, batch_size=500, callbacks=callbacks_list)
+j=1
+for i in np.repeat(4, 13):
+    model.fit(X, y, epochs=i, batch_size=500, callbacks=callbacks_list)
+    print('\n \n starting {} \n \n'.format(j))
+    j+=1
