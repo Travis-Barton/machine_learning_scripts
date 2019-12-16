@@ -58,11 +58,8 @@ model.add(Dense(y.shape[1], activation = 'softmax'))
 model.compile(loss = 'categorical_crossentropy', 
               optimizer=keras.optimizers.adam())
 
-filepath = "best_weights2.hdf5"
+filepath = "best_weights.hdf5"
 checkpoint = ModelCheckpoint(filepath, monitor='loss', verbose=1, save_best_only=True, mode='min')
 callbacks_list = [checkpoint]
-j=1
-for i in np.repeat(4, 13):
-    model.fit(X, y, epochs=i, batch_size=500, callbacks=callbacks_list)
-    print('\n \n starting {} \n \n'.format(j))
-    j+=1
+
+model.fit(X, y, epochs=100, batch_size=500, callbacks=callbacks_list)
