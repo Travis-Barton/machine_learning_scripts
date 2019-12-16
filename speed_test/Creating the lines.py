@@ -1,5 +1,10 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Mon Dec 16 11:18:04 2019
 
-
+@author: tbarton
+"""
 import numpy as np
 from keras.models import Sequential
 from keras.layers import Dense
@@ -8,8 +13,25 @@ from keras.layers import LSTM
 from keras.callbacks import ModelCheckpoint
 from keras.utils import np_utils
 import keras
+import random as rd
 
-print('imports done')
+
+model = Sequential()
+model.add(LSTM(256, input_shape=(X.shape[1], X.shape[2])))
+model.add(Dropout(.4))
+model.add(Dense(100, activation = 'tanh'))
+model.add(Dense(y.shape[1], activation = 'softmax'))
+
+
+
+
+
+model.compile(loss = 'categorical_crossentropy', 
+              optimizer=keras.optimizers.adam())
+
+
+model.load_weights('best_weights2.hdf5')
+
 
 bib = open('TheBible.txt', 'r').read()
 bib = bib.lower()
@@ -48,20 +70,17 @@ y = np.array(y_new)
 print('model being created')
 
 
-model = Sequential()
-model.add(LSTM(256, input_shape=(X.shape[1], X.shape[2])))
-model.add(Dropout(.4))
-model.add(Dense(100, activation = 'tanh'))
-model.add(Dense(y.shape[1], activation = 'softmax'))
+
+new_vec = datax[rd.randint(0, len(datax))]
+
+for i in range(300):
+    pred = np.argmax(model.predict(np.reshape([i/float(n_vocab) for i in new_vec], (1, 300, 1))))
+    new_vec.append(pred)
+    new_vec = new_vec[1:]
+    
+int_to_char = dict((i, c) for i, c in enumerate(chars))
 
 
-model.compile(loss = 'categorical_crossentropy', 
-              optimizer=keras.optimizers.adam())
-
-filepath = "best_weights.hdf5"
-checkpoint = ModelCheckpoint(filepath, monitor='loss', verbose=1, save_best_only=True, mode='min')
-callbacks_list = [checkpoint]
-
-model.load_weights('best_weights2.hdf5')
-
-model.fit(X, y, epochs=100, batch_size=500, callbacks=callbacks_list)
+verse = ''
+for i in new_vec:
+    verse = verse + int_to_char[i]
