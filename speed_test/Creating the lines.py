@@ -16,22 +16,6 @@ import keras
 import random as rd
 
 
-model = Sequential()
-model.add(LSTM(256, input_shape=(X.shape[1], X.shape[2])))
-model.add(Dropout(.4))
-model.add(Dense(100, activation = 'tanh'))
-model.add(Dense(y.shape[1], activation = 'softmax'))
-
-
-
-
-
-model.compile(loss = 'categorical_crossentropy', 
-              optimizer=keras.optimizers.adam())
-
-
-model.load_weights('best_weights2.hdf5')
-
 
 bib = open('TheBible.txt', 'r').read()
 bib = bib.lower()
@@ -69,10 +53,27 @@ y = np.array(y_new)
 
 print('model being created')
 
+model = Sequential()
+model.add(LSTM(256, input_shape=(X.shape[1], X.shape[2])))
+model.add(LSTM(256))
+model.add(Dropout(.4))
+model.add(Dense(100, activation = 'tanh'))
+model.add(Dense(y.shape[1], activation = 'softmax'))
+
+
+
+
+
+model.compile(loss = 'categorical_crossentropy', 
+              optimizer=keras.optimizers.adam())
+
+
+model.load_weights('best_weights.hdf5')
+
 
 
 new_vec = datax[rd.randint(0, len(datax))]
-
+seed_vec = new_vec.copy()
 for i in range(300):
     pred = np.argmax(model.predict(np.reshape([i/float(n_vocab) for i in new_vec], (1, 300, 1))))
     new_vec.append(pred)
@@ -84,3 +85,9 @@ int_to_char = dict((i, c) for i, c in enumerate(chars))
 verse = ''
 for i in new_vec:
     verse = verse + int_to_char[i]
+og = ''
+for i in seed_vec:
+    og = og + int_to_char[i]
+
+print(og + '\n\n\n')
+print(verse)
