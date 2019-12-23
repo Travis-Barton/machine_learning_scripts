@@ -31,8 +31,8 @@ def add_package_to_sys_path(base, package_relative_path):
 
 
 flag = 0
-MAX_VAL = 9000000
-CHUNKSIZE = 100000
+MAX_VAL = 90000
+CHUNKSIZE = 1000
 WAVEFORM_LEN = 28000
 EMBEDDING_DIM = 1000
 
