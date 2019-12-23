@@ -95,7 +95,7 @@ def get_dist_wfs_by_dwr_table_id(wfl_conn, start_id, end_id):
         AND
         i_len = 10020
     """
-    sqlr = sql + """where dwr.id >= {start_id} and dwr.id < {end_id} """.format(start_id=start_id, end_id=end_id)
+    sqlr = sql + """AND dwr.id >= {start_id} and dwr.id < {end_id} """.format(start_id=start_id, end_id=end_id)
     return pd.read_sql(sqlr, wfl_conn)
 
 def waveform_chopper(data, y = None, full = True, breaks = 75):
