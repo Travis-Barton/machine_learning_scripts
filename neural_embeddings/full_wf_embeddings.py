@@ -73,6 +73,7 @@ from statistics import mode
 import os
 import scipy.stats as stats
 import random as rd
+import time
 def get_dist_wfs_by_dwr_table_id(wfl_conn, start_id, end_id):
     sql = """
         SELECT 
@@ -89,15 +90,75 @@ def get_dist_wfs_by_dwr_table_id(wfl_conn, start_id, end_id):
         FROM disturbance_waveforms_raw dwr
         INNER JOIN disturbance_mm3_basics b
         on dwr.waveform_id = b.waveform_id
+        WHERE 
+        e_len = 10020
+        AND
+        i_len = 10020
     """
     sqlr = sql + """where dwr.id >= {start_id} and dwr.id < {end_id} """.format(start_id=start_id, end_id=end_id)
     return pd.read_sql(sqlr, wfl_conn)
 
+def waveform_chopper(data, y = None, full = True, breaks = 75):
+    '''
+    description: 
+        
+    '''
+    if full == True:
+        ret = pd.DataFrame()
+        i = 0
+        times = [[],[],[]]
+        for index, x in tqdm(data.iterrows(), total=data.shape[0]):
+            ret_temp = pd.DataFrame()
+            for j in range(breaks):
+                s = time.time()
+                
+                red_row = x.iloc[np.r_[np.arange(j, data.shape[1], breaks)[0:-1]]].values
+    #            red_row = red_row.reset_index()
+                times[0].append(time.time()-s)
+                s = time.time()
+                if y is not None:
+                    red_row[len(red_row)] = y.iloc[i]
+                else:
+                    red_row = red_row[:-1]
+                times[1].append(time.time()-s)
+                s = time.time()
+                red_row = pd.Series(red_row)
+                red_row.name = x.name
+    #            ret = ret.reset_index(drop = True)
+                ret_temp = ret_temp.append(red_row)            
+            
+                
+                times[2].append(time.time()-s)
+            ret = ret.append(ret_temp, ignore_index = True)
+            i += 1
+        ret = ret.rename({len(red_row):'label'}, axis = 'columns')
+        print('\n Part 1: {} \n Part 2: {} \n Part 3: {}'.format(np.mean(times[0]), np.mean(times[1]), np.mean(times[2])))   
+        return(ret)
+    else:
+        ret = pd.DataFrame()
+        i = 0
+        times = [[],[],[]]
+        for index, x in tqdm(data.iterrows(), total=data.shape[0]):
+            
+            red_row = x.iloc[np.r_[np.arange(5, data.shape[1], breaks)[0:-1]]].values
+            if y is not None:
+                red_row[len(red_row)] = y.iloc[i]
+            else:
+                red_row = red_row[:-1]
+            red_row = pd.Series(red_row)
+            red_row.name = x.name
+#            ret = ret.reset_index(drop = True)
+        
+            
+            ret = ret.append(red_row, ignore_index = True)
+            i += 1
+        ret = ret.rename({len(red_row):'label'}, axis = 'columns')
+        #print('\n Part 1: {} \n Part 2: {} \n Part 3: {}'.format(np.mean(times[0]), np.mean(times[1]), np.mean(times[2])))   
+        return(ret)
 
 
 
-
-input_wave = Input(shape=(28000,))   
+input_wave = Input(shape=(10020,))   
 encoded1 = Dense(7000, activation = 'sigmoid')(input_wave)  
 encoded3 = Dense(5000, activation = 'relu')(encoded1)   
 encoded4 = Dense(3000, activation = 'relu')(encoded3)  
@@ -105,7 +166,7 @@ encoded = Dense(EMBEDDING_DIM, activation = 'relu')(encoded4)
 decoded3 = Dense(3000, activation = 'relu')(encoded)  
 decoded4 = Dense(5000, activation = 'relu')(decoded3)   
 decoded5 = Dense(7000, activation = 'relu')(decoded4)  
-decoded = Dense(28000, activation = 'sigmoid')(decoded5)
+decoded = Dense(10020, activation = 'sigmoid')(decoded5)
   
 autoencoder = Model(input_wave, decoded)
 autoencoder.compile(optimizer = 'adadelta', loss = 'binary_crossentropy')
@@ -122,7 +183,7 @@ for i in np.arange(0, MAX_VAL, CHUNKSIZE):
     try:
         temp = pd.DataFrame(temp_db['i_wf_raw_bytes'].apply(np.frombuffer, dtype = '<i4').apply(pd.Series))
         temp = temp.multiply(temp_db['i_post_scale'], axis = 0)
-        
+        #temp = waveform_chopper(temp, full = True, breaks = 10)
     except:
         print('Error on sections {}-{}'.format(i, i+CHUNKSIZE))
         continue
