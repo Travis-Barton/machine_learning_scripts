@@ -100,6 +100,16 @@ def get_dist_wfs_by_dwr_table_id(wfl_conn, start_id, end_id):
     sqlr = sql + """AND dwr.id >= {start_id} and dwr.id < {end_id} """.format(start_id=start_id, end_id=end_id)
     return pd.read_sql(sqlr, wfl_conn)
 
+
+def normalize(vec):
+    def calc(x, mi, ma):
+        return((x-mi)/(ma-mi))
+    mi = np.nanmin(vec)
+    ma = np.nanmax(vec)
+    return(np.apply_along_axis(calc, 0, vec, mi, ma))
+
+
+
 def waveform_chopper(data, y = None, full = True, breaks = 75):
     '''
     description: 
@@ -185,6 +195,7 @@ for i in np.arange(0, MAX_VAL, CHUNKSIZE):
     try:
         temp = pd.DataFrame(temp_db['i_wf_raw_bytes'].apply(np.frombuffer, dtype = '<i4').apply(pd.Series))
         temp = temp.multiply(temp_db['i_post_scale'], axis = 0)
+        temp = normalize(temp)
         #temp = waveform_chopper(temp, full = True, breaks = 10)
     except:
         print('Error on sections {}-{}'.format(i, i+CHUNKSIZE))
