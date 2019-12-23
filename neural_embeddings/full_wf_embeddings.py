@@ -194,7 +194,7 @@ for i in np.arange(0, MAX_VAL, CHUNKSIZE):
     autoencoder.fit(np.array(temp), np.array(temp), 
                     epochs = 50, batch_size = 1,
                     shuffle = True, 
-                    validation_split = .1, verbose = 0)
+                    validation_split = .1, verbose = 1)
     encode = Model(input_wave, encoded)
     
     encode_yaml = encode.to_yaml()
