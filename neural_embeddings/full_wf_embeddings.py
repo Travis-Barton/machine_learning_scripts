@@ -134,7 +134,7 @@ for i in np.arange(0, MAX_VAL, CHUNKSIZE):
     z = pd.DataFrame(np.zeros((temp.shape[0], WAVEFORM_LEN-ncol)))
     i_data = pd.concat([temp, z], axis=1, ignore_index = True)
     autoencoder.fit(i_data, i_data, 
-                    epochs = 50, batch_size = 10,
+                    epochs = 50, batch_size = 1,
                     shuffle = True, 
                     validation_split = .1, verbose = 0)
     encode = Model(input_wave, encoded)
