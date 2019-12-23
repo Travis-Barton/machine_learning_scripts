@@ -13,6 +13,8 @@ from keras.models import model_from_yaml
 from Autoencoder_to_TSNE_Reduction import wf_autoencoder
 import pandas as pd
 import keras
+import tensorflow.python.util.deprecation as deprecation
+deprecation._PRINT_DEPRECATION_WARNINGS = False
 #import modin.padas as pd
 
 import os
@@ -192,7 +194,7 @@ for i in np.arange(0, MAX_VAL, CHUNKSIZE):
     #i_data = pd.concat([temp, z], axis=1, ignore_index = True)
     
     autoencoder.fit(np.array(temp), np.array(temp), 
-                    epochs = 50, batch_size = 1,
+                    epochs = 50, batch_size = 100,
                     shuffle = True, 
                     validation_split = .1, verbose = 1)
     encode = Model(input_wave, encoded)
