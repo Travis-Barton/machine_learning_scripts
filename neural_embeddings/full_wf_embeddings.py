@@ -13,8 +13,8 @@ from keras.models import model_from_yaml
 from Autoencoder_to_TSNE_Reduction import wf_autoencoder
 import pandas as pd
 import keras
-import tensorflow.python.util.deprecation as deprecation
-deprecation._PRINT_DEPRECATION_WARNINGS = False
+import tensorflow as tf
+tf.logging.set_verbosity(tf.logging.ERROR)
 #import modin.padas as pd
 
 import os
