@@ -14,7 +14,7 @@ from Autoencoder_to_TSNE_Reduction import wf_autoencoder
 import pandas as pd
 import keras
 import tensorflow as tf
-tf.logging.set_verbosity(tf.compat.v1.logging.ERROR)
+tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
 #import modin.padas as pd
 
 import os
@@ -171,7 +171,7 @@ decoded5 = Dense(7000, activation = 'relu')(decoded4)
 decoded = Dense(10020, activation = 'sigmoid')(decoded5)
   
 autoencoder = Model(input_wave, decoded)
-autoencoder.compile(optimizer = 'adadelta', loss = 'binary_crossentropy')
+autoencoder.compile(optimizer = 'adam', loss = 'mean_squared_error')
 
 
 
