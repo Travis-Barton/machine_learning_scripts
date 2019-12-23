@@ -14,7 +14,7 @@ from Autoencoder_to_TSNE_Reduction import wf_autoencoder
 import pandas as pd
 import keras
 import tensorflow as tf
-tf.logging.set_verbosity(tf.logging.ERROR)
+tf.logging.set_verbosity(tf.compat.v1.logging.ERROR)
 #import modin.padas as pd
 
 import os
@@ -31,8 +31,8 @@ def add_package_to_sys_path(base, package_relative_path):
 
 
 flag = 0
-MAX_VAL = 90000
-CHUNKSIZE = 1000
+MAX_VAL = 9000000
+CHUNKSIZE = 100000
 WAVEFORM_LEN = 28000
 EMBEDDING_DIM = 1000
 
