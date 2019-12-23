@@ -109,7 +109,7 @@ decoded3 = Dense(5000, activation = 'relu')(decoded2)
 decoded4 = Dense(7000, activation = 'relu')(decoded3)   
 decoded5 = Dense(9000, activation = 'relu')(decoded4)  
 decoded6 = Dense(9000, activation = 'relu')(decoded5)  
-decoded = Dense(12000, activation = 'sigmoid')(decoded6)
+decoded = Dense(28000, activation = 'sigmoid')(decoded6)
   
 autoencoder = Model(input_wave, decoded)
 autoencoder.compile(optimizer = 'adadelta', loss = 'binary_crossentropy')
