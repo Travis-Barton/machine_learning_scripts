@@ -29,9 +29,9 @@ def add_package_to_sys_path(base, package_relative_path):
 
 
 flag = 0
-MAX_VAL = 9000000
-CHUNKSIZE = 100000
-WAVEFORM_LEN = 12000
+MAX_VAL = 90000
+CHUNKSIZE = 1000
+WAVEFORM_LEN = 28000
 EMBEDDING_DIM = 1000
 
 
@@ -97,7 +97,7 @@ def get_dist_wfs_by_dwr_table_id(wfl_conn, start_id, end_id):
 
 
 
-input_wave = Input(shape=(12000,))   
+input_wave = Input(shape=(28000,))   
 encoded1 = Dense(9000, activation = 'sigmoid')(input_wave)  
 encoded2 = Dense(9000, activation = 'relu')(encoded1)  
 encoded3 = Dense(7000, activation = 'relu', activity_regularizer=keras.regularizers.l2(0.01))(encoded2)   
@@ -117,35 +117,41 @@ autoencoder.compile(optimizer = 'adadelta', loss = 'binary_crossentropy')
 
 
 for i in np.arange(0, MAX_VAL, CHUNKSIZE):    
+    print('trying {}-{}'.format(i, i+CHUNKSIZE))
     temp_db = get_dist_wfs_by_dwr_table_id(dbc.db_connect(dbc.wfl_db_config), i, i+CHUNKSIZE)
     # temp = pd.DataFrame(temp_db['e_wf_raw_bytes'].apply(np.frombuffer, dtype = '<i4').apply(pd.Series))
     # temp = temp.multiply(temp_db['e_post_scale'], axis = 0)
     # e_data = e_data.append(temp)  
     
-    temp = pd.DataFrame(temp_db['i_wf_raw_bytes'].apply(np.frombuffer, dtype = '<i4').apply(pd.Series))
-    temp = temp.multiply(temp_db['i_post_scale'], axis = 0)
+    try:
+        temp = pd.DataFrame(temp_db['i_wf_raw_bytes'].apply(np.frombuffer, dtype = '<i4').apply(pd.Series))
+        temp = temp.multiply(temp_db['i_post_scale'], axis = 0)
+        
+    except:
+        print('Error on sections {}-{}'.format(i, i+CHUNKSIZE))
+        continue
     ncol = temp.shape[1]
     z = pd.DataFrame(np.zeros((temp.shape[0], WAVEFORM_LEN-ncol)))
     i_data = pd.concat([temp, z], axis=1, ignore_index = True)
     autoencoder.fit(i_data, i_data, 
                     epochs = 50, batch_size = 600,
                     shuffle = True, 
-                    validation_split = .1)
+                    validation_split = .1, verbose = 0)
+    encode = Model(input_wave, encoded)
+    
+    encode_yaml = encode.to_yaml()
+    
+    with open("encode_yaml.yaml", "w") as yaml_file:
+        yaml_file.write(encode_yaml)
+    
+    
+    encode.save_weights("encode.h5")
+    
+    autoencoder_yaml = autoencoder.to_yaml()
+    with open("autoencoder_yaml.yaml", "w") as yaml_file:
+        yaml_file.write(autoencoder_yaml)
+    
+    autoencoder.save_weights("autoencoder.h5")
+    print("Saved models to disk")    
+    
 
-
-encode = Model(input_wave, encoded)
-
-encode_yaml = encode.to_yaml()
-
-with open("encode_yaml.yaml", "w") as yaml_file:
-    yaml_file.write(encode_yaml)
-
-
-encode.save_weights("encode.h5")
-
-autoencoder_yaml = autoencoder.to_yaml()
-with open("autoencoder_yaml.yaml", "w") as yaml_file:
-    yaml_file.write(autoencoder_yaml)
-
-autoencoder.save_weights("autoencoder.h5")
-print("Saved model to disk")    
