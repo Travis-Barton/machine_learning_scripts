@@ -171,17 +171,19 @@ def waveform_chopper(data, y = None, full = True, breaks = 75):
 
 
 input_wave = Input(shape=(10020,))   
-encoded1 = Dense(7000, activation = 'sigmoid')(input_wave)  
-encoded3 = Dense(5000, activation = 'relu')(encoded1)   
-encoded4 = Dense(3000, activation = 'relu')(encoded3)  
-encoded = Dense(EMBEDDING_DIM, activation = 'relu')(encoded4)  
-decoded3 = Dense(3000, activation = 'relu')(encoded)  
-decoded4 = Dense(5000, activation = 'relu')(decoded3)   
-decoded5 = Dense(7000, activation = 'relu')(decoded4)  
-decoded = Dense(10020, activation = 'sigmoid')(decoded5)
+encoded1 = Dense(9000, activation = 'sigmoid')(input_wave)  
+encoded2 = Dense(7000, activation = 'sigmoid')(encoded1)   
+encoded3 = Dense(5000, activation = 'sigmoid')(encoded2)   
+encoded4 = Dense(3000, activation = 'sigmoid', kernel_regularizer=regularizers.l2(0.01), activity_regularizer=regularizers.l1(0.01))(encoded3)  
+encoded = Dense(EMBEDDING_DIM, activation = 'sigmoid')(encoded4)  
+decoded3 = Dense(3000, activation = 'sigmoid')(encoded)  
+decoded4 = Dense(5000, activation = 'sigmoid')(decoded3)   
+decoded5 = Dense(7000, activation = 'sigmoid')(decoded4)  
+decoded6 = Dense(9000, activation = 'sigmoid')(decoded5)  
+decoded = Dense(10020, activation = 'sigmoid')(decoded6)
   
 autoencoder = Model(input_wave, decoded)
-autoencoder.compile(optimizer = 'adam', loss = 'mean_squared_error')
+autoencoder.compile(optimizer = 'sgd', loss = 'mean_squared_error')
 
 
 
@@ -204,8 +206,8 @@ for i in np.arange(0, MAX_VAL, CHUNKSIZE):
     #z = pd.DataFrame(np.zeros((temp.shape[0], WAVEFORM_LEN-ncol)))
     #i_data = pd.concat([temp, z], axis=1, ignore_index = True)
     
-    autoencoder.fit(np.array(temp), np.array(temp), 
-                    epochs = 25, batch_size = 100,
+    autoencoder.fit(temp, temp, 
+                    epochs = 10, batch_size = 100,
                     shuffle = True, 
                     validation_split = .1, verbose = 1)
     encode = Model(input_wave, encoded)
