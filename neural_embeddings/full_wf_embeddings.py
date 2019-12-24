@@ -205,7 +205,7 @@ for i in np.arange(0, MAX_VAL, CHUNKSIZE):
     #i_data = pd.concat([temp, z], axis=1, ignore_index = True)
     
     autoencoder.fit(np.array(temp), np.array(temp), 
-                    epochs = 50, batch_size = 100,
+                    epochs = 25, batch_size = 100,
                     shuffle = True, 
                     validation_split = .1, verbose = 1)
     encode = Model(input_wave, encoded)
