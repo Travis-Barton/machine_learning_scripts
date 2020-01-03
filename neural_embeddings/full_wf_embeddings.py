@@ -76,6 +76,7 @@ import os
 import scipy.stats as stats
 import random as rd
 import time
+
 def get_dist_wfs_by_dwr_table_id(wfl_conn, start_id, end_id):
     sql = """
         SELECT 
@@ -197,8 +198,8 @@ for i in np.arange(0, MAX_VAL, CHUNKSIZE):
     try:
         temp = pd.DataFrame(temp_db['i_wf_raw_bytes'].apply(np.frombuffer, dtype = '<i4').apply(pd.Series))
         temp = temp.multiply(temp_db['i_post_scale'], axis = 0)
-        temp = get_frequency_content(temp.values[0], frequency = 60, sample_rate = 7812.5)
-        temp = normalize(temp)
+        temp = temp.apply(get_frequency_content, frequency = 60, sample_rate = 7812.5, axis = 1).apply(pd.Series).iloc[:,1].apply(pd.Series)
+        temp = temp.apply(normalize, axis = 1)
         #temp = waveform_chopper(temp, full = True, breaks = 10)
     except:
         print('Error on sections {}-{}'.format(i, i+CHUNKSIZE))
