@@ -197,6 +197,7 @@ for i in np.arange(0, MAX_VAL, CHUNKSIZE):
     try:
         temp = pd.DataFrame(temp_db['i_wf_raw_bytes'].apply(np.frombuffer, dtype = '<i4').apply(pd.Series))
         temp = temp.multiply(temp_db['i_post_scale'], axis = 0)
+        temp = get_frequency_content(temp.values[0], frequency = 60, sample_rate = 7812.5)
         temp = normalize(temp)
         #temp = waveform_chopper(temp, full = True, breaks = 10)
     except:
