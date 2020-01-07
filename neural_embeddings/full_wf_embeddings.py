@@ -204,7 +204,7 @@ for i in np.arange(0, MAX_VAL, CHUNKSIZE):
     except:
         print('Error on sections {}-{}'.format(i, i+CHUNKSIZE))
         continue
-    ncol = temp.shape[1]
+    #ncol = temp.shape[1]
     #z = pd.DataFrame(np.zeros((temp.shape[0], WAVEFORM_LEN-ncol)))
     #i_data = pd.concat([temp, z], axis=1, ignore_index = True)
     
