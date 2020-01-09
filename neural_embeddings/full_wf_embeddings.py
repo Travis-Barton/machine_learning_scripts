@@ -10,7 +10,7 @@ from keras.models import Model
 from keras import regularizers
 from sklearn.manifold import TSNE
 from keras.models import model_from_yaml
-from Autoencoder_to_TSNE_Reduction import wf_autoencoder
+#from Autoencoder_to_TSNE_Reduction import wf_autoencoder
 import pandas as pd
 import keras
 import tensorflow as tf
@@ -209,7 +209,7 @@ for i in np.arange(0, MAX_VAL, CHUNKSIZE):
     #z = pd.DataFrame(np.zeros((temp.shape[0], WAVEFORM_LEN-ncol)))
     #i_data = pd.concat([temp, z], axis=1, ignore_index = True)
     
-    autoencoder.fit(temp, temp, 
+    autoencoder.fit(temp.dropna(1), temp.dropna(1), 
                     epochs = 10, batch_size = 100,
                     shuffle = True, 
                     validation_split = .1, verbose = 1)
