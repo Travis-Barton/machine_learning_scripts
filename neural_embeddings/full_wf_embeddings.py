@@ -202,8 +202,8 @@ for i in np.arange(0, MAX_VAL, CHUNKSIZE):
         temp = db_to_waves(temp_db, e_or_i = 'i', hz60 = True)
         temp = temp[1].apply(normalize, axis = 1).apply(pd.Series)
         #temp = waveform_chopper(temp, full = True, breaks = 10)
-    except:
-        print('Error on sections {}-{}'.format(i, i+CHUNKSIZE))
+    except Exception as E:
+        print('Error on sections {}-{} \n With error {}'.format(i, i+CHUNKSIZE, E))
         continue
     #ncol = temp.shape[1]
     #z = pd.DataFrame(np.zeros((temp.shape[0], WAVEFORM_LEN-ncol)))
