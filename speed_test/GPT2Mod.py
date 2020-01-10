@@ -14,4 +14,4 @@ import gpt_2_simple as gpt2
 sess = gpt2.start_tf_sess()
 gpt2.finetune(sess, 'TheBible.txt', steps=1000)   # steps is max number of training steps
 
-gpt2.generate(sess)
+print(gpt2.generate(sess))
