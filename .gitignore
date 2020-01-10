@@ -6,3 +6,5 @@
 *.bpe
 *.data-00000-of-00001
 speed_test/models/124M/checkpoint
+*.h5
+*.yaml
