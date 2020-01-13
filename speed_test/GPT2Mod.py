@@ -15,4 +15,17 @@ sess = gpt2.start_tf_sess()
 gpt2.finetune(sess, 'TheBible.txt', steps=1000)   # steps is max number of training steps
 
 single_text = gpt2.generate(sess, return_as_list=True)[0]
-print(single_text)
+print(single_text)      
+
+
+
+
+import gpt_2_simple as gpt2
+
+sess = gpt2.start_tf_sess()
+gpt2.finetune(sess, 'azdictionary.txt', steps=1000)   # steps is max number of training steps
+
+single_text = gpt2.generate(sess, return_as_list=True)[0]
+print(single_text)      
+
+

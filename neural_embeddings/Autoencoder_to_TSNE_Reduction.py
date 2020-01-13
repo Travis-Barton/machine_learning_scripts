@@ -13,7 +13,9 @@ from keras.models import Model
 from keras import regularizers
 from sklearn.manifold import TSNE
 from keras.models import model_from_yaml
-
+from sklearn.cluster import KMeans
+import numpy as np
+from metric_functions import *
 
 def wf_autoencoder(xtrain, xtest = None, encoding_dim = 1000, epochs = 50, batch_size = 300, validation_data = None, validation_split = .1, load_model = None, save_model=False):
     """
@@ -127,7 +129,8 @@ def wf_autoencoder(xtrain, xtest = None, encoding_dim = 1000, epochs = 50, batch
         
         
         encoded_waves = encode.predict(xtrain)
-
+        full_waves = autoencoder.predict(xtrain)
+        return([encoded_waves, full_waves])
 #################### Testing time #######################
     
 #xtrain = dat_val.fillna(0).apply(normalize, 1).apply(pd.Series)
@@ -135,6 +138,40 @@ def wf_autoencoder(xtrain, xtest = None, encoding_dim = 1000, epochs = 50, batch
 #temp = wf_autoencoder(xtrain, epochs = 1)
 
 
+test = wf_autoencoder(normalize(i_data.iloc[:,:-1]), load_model = 'Standard')
 
+test[0] = pd.DataFrame(test[0])
+
+'''
+When you come back
+    1. Get Kmeans clustering going for 
+        a. raw data
+        b. sampled down data
+        c. autoencoded data 
+'''
+
+
+# 1. Kmeans on red
+
+
+teskm = KMeans(n_clusters = 9, n_jobs = 4)
+
+teskm.fit(test[0])
+testkm = teskm.predict(test[0].dropna())
+np.argmax(testkm, 1)
+np.unique(testkm[0])
+
+# 2. Kmeans on full
+
+teskm = KMeans(n_clusters = 9, n_jobs = 4)
+
+teskm.fit(pd.DataFrame(normalize(i_data.iloc[:,:-1])))
+testkm = teskm.predict(pd.DataFrame(test[0]).dropna())
+testkm = Kmeans(i_data.iloc[:, :-2], len(np.unique(i_data['label'])))
+
+
+
+plot(i_data.iloc[0, :-1])
+plot(test[0].iloc[0, :])
 
 
