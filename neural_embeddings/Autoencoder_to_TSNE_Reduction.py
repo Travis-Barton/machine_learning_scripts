@@ -138,7 +138,7 @@ def wf_autoencoder(xtrain, xtest = None, encoding_dim = 1000, epochs = 50, batch
 #temp = wf_autoencoder(xtrain, epochs = 1)
 
 
-test = wf_autoencoder(normalize(i_data.iloc[:,:-1]), load_model = 'Standard')
+test = wf_autoencoder(i_data[1], load_model = 'Standard')
 
 test[0] = pd.DataFrame(test[0])
 
@@ -170,8 +170,14 @@ testkm = teskm.predict(pd.DataFrame(test[0]).dropna())
 testkm = Kmeans(i_data.iloc[:, :-2], len(np.unique(i_data['label'])))
 
 
+from waveform_class import Waveform
 
-plot(i_data.iloc[0, :-1])
-plot(test[0].iloc[0, :])
+
+plot(test[1][1000], label = 'auto_encoded')
+plot(test[1][1010], label = 'auto_encoded')
+
+
+plot(i_data[1].iloc[1000,:].values, label = 'original')
+plt.legend()
 
 

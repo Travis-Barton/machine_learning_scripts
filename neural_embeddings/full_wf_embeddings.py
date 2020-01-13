@@ -171,7 +171,7 @@ def waveform_chopper(data, y = None, full = True, breaks = 75):
 
 
 
-input_wave = Input(shape=(10020,))   
+input_wave = Input(shape=(9240,))   
 encoded1 = Dense(9000, activation = 'sigmoid')(input_wave)  
 encoded2 = Dense(7000, activation = 'sigmoid')(encoded1)   
 encoded3 = Dense(5000, activation = 'sigmoid')(encoded2)   
@@ -181,7 +181,7 @@ decoded3 = Dense(3000, activation = 'sigmoid')(encoded)
 decoded4 = Dense(5000, activation = 'sigmoid')(decoded3)   
 decoded5 = Dense(7000, activation = 'sigmoid')(decoded4)  
 decoded6 = Dense(9000, activation = 'sigmoid')(decoded5)  
-decoded = Dense(10020, activation = 'sigmoid')(decoded6)
+decoded = Dense(9240, activation = 'sigmoid')(decoded6)
   
 autoencoder = Model(input_wave, decoded)
 autoencoder.compile(optimizer = 'sgd', loss = 'mean_squared_error')
@@ -209,10 +209,11 @@ for i in np.arange(0, MAX_VAL, CHUNKSIZE):
     #z = pd.DataFrame(np.zeros((temp.shape[0], WAVEFORM_LEN-ncol)))
     #i_data = pd.concat([temp, z], axis=1, ignore_index = True)
     
-    autoencoder.fit(temp.fillna(0), temp.fillna(0), 
+    autoencoder.fit(temp.dropna(), temp.dropna(), 
                     epochs = 10, batch_size = 100,
                     shuffle = True, 
                     validation_split = .1, verbose = 1)
+    
     encode = Model(input_wave, encoded)
     
     encode_yaml = encode.to_yaml()
