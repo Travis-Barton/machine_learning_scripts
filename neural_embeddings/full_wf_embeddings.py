@@ -200,7 +200,7 @@ for i in np.arange(0, MAX_VAL, CHUNKSIZE):
         # temp = temp.multiply(temp_db['i_post_scale'], axis = 0)
         # temp = temp.apply(get_frequency_content, frequency = 60, sample_rate = 7812.5, axis = 1).apply(pd.Series).iloc[:,1].apply(pd.Series)
         temp = db_to_waves(temp_db, e_or_i = 'i', hz60 = True, disturbance = True)
-        temp = temp[1].apply(normalize, axis = 1).apply(pd.Series)
+        temp = temp[1].dropna().apply(normalize, axis = 1).apply(pd.Series)
         #temp = waveform_chopper(temp, full = True, breaks = 10)
     except Exception as E:
         print('Error on sections {}-{} \n With error {}'.format(i, i+CHUNKSIZE, E))
