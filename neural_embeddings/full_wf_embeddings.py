@@ -218,14 +218,14 @@ for i in np.arange(0, MAX_VAL, CHUNKSIZE):
     
     encode_yaml = encode.to_yaml()
     
-    with open("encode_yaml.yaml", "w") as yaml_file:
+    with open("encode.yaml", "w") as yaml_file:
         yaml_file.write(encode_yaml)
     
     
     encode.save_weights("encode.h5")
     
     autoencoder_yaml = autoencoder.to_yaml()
-    with open("autoencoder_yaml.yaml", "w") as yaml_file:
+    with open("autoencoder.yaml", "w") as yaml_file:
         yaml_file.write(autoencoder_yaml)
     
     autoencoder.save_weights("autoencoder.h5")
