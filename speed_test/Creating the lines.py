@@ -55,7 +55,6 @@ print('model being created')
 
 model = Sequential()
 model.add(LSTM(256, input_shape=(X.shape[1], X.shape[2])))
-model.add(LSTM(256))
 model.add(Dropout(.4))
 model.add(Dense(100, activation = 'tanh'))
 model.add(Dense(y.shape[1], activation = 'softmax'))
@@ -69,6 +68,14 @@ model.compile(loss = 'categorical_crossentropy',
 
 
 model.load_weights('best_weights.hdf5')
+
+
+
+def sample(a, temperature=1.0):
+    # helper function to sample an index from a probability array
+    a = np.log(a) / temperature
+    a = np.exp(a) / np.sum(np.exp(a))
+    return np.argmax(np.random.multinomial(1, a, 1))
 
 
 
